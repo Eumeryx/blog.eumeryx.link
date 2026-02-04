@@ -1,10 +1,14 @@
 :root {
 
-    --vp-c-brand: #2563eb !important;
+    --vp-c-brand: #2563eb;
     --vp-c-brand-light: var(--vp-c-brand);
     --vp-c-brand-lighter: var(--vp-c-brand);
     --vp-c-brand-dark: var(--vp-c-brand);
     --vp-c-brand-darker: var(--vp-c-brand);
+
+    --vp-c-text-2: #34495e;
+    --vp-c-brand-2: #2c3e50;
+    --vp-c-divider-light: #ddd;
 
     --vp-font-family-base: 'PingFang SC', 'Microsoft Yahei', sans-serif;
 
@@ -15,13 +19,20 @@
 }
 .dark {
     --vp-c-brand: #3b82f6;
+    --vp-c-text-2: unset;
+    --vp-c-brand-2: unset;
+    --vp-c-divider-light: #dfdfd6;
 }
 
+.logo {
+    width: 32px;
+    height: 32px !important;
+}
 
 /* theme reset start */
 
 .Layout {
-    min-height: calc(100vh - 78px) !important; /* reduce copyright */
+    min-height: calc(100vh - 40px) !important; /* reduce copyright */
 }
 
 .vp-doc a {
@@ -31,6 +42,7 @@
 }
 .vp-doc p {
     font-size: 0.9375rem;
+    line-height: 1.5rem;
 }
 
 .content a[rel~='noreferrer']:link, a[rel~='noreferrer']:visited {

@@ -3,11 +3,12 @@ import type { Theme } from 'vitepress'
 import NewLayout from './components/NewLayout.vue'
 import Archives from './components/Archives.vue'
 import Category from './components/Category.vue'
+import Games from './components/Games.vue'
 import Tags from './components/Tags.vue'
-import Page from './components/Page.vue'
-import Comment from './components/Comment.vue'
+import Home from './components/Home.vue'
 
 import './custom.css'
+import 'katex/dist/katex.css'
 
 export default {
     ...DefaultTheme,
@@ -17,7 +18,7 @@ export default {
         app.component('Tags', Tags)
         app.component('Category', Category)
         app.component('Archives', Archives)
-        app.component('Page', Page)
-        app.component('Comment', Comment)
+        app.component('Home', Home)
+        app.component('Games', Games)
     }
 } satisfies Theme

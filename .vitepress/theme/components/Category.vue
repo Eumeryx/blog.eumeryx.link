@@ -3,22 +3,24 @@
         <div class="category">
             {{ key }}
         </div>
-        <a :href="withBase(article.regularPath)" v-for="(article, index) in posts" :key="index" class="posts">
+        <a :href="withBase(post.url)" v-for="(post, index) in posts" :key="index" class="posts">
             <div class="post-container">
                 <div class="post-dot"></div>
-                {{ article.frontMatter.title }}
+                {{ post.title }}
             </div>
-            <div class="date">{{ article.frontMatter.date }}</div>
+            <div class="date">{{ dayjs(post.date).format('YYYY-MM-DD') }}</div>
         </a>
     </div>
 </template>
 <script lang="ts" setup>
+import dayjs from 'dayjs'
 import { useData, withBase } from 'vitepress'
 import { computed } from 'vue'
-import { initCategory } from '../functions'
+import { initCategory } from '../utils'
+import { data as posts } from '../posts.data'
 
 const { theme } = useData()
-const data = computed(() => initCategory(theme.value.posts))
+const data = computed(() => initCategory(posts))
 </script>
 
 <style scoped>

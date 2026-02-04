@@ -6,31 +6,36 @@
     </div>
     <div class="tag-header">{{ selectTag }}</div>
     <a
-        :href="withBase(article.regularPath)"
-        v-for="(article, index) in selectTag ? data[selectTag] : []"
+        v-for="({url, title, date}, index) in selectTag ? data[selectTag] : []"
+        :href="withBase(url)"
         :key="index"
         class="posts"
     >
         <div class="post-container">
             <div class="post-dot"></div>
-            {{ article.frontMatter.title }}
+            {{ title }}
         </div>
-        <div class="date">{{ article.frontMatter.date }}</div>
+        <div class="date">{{ dayjs(date).format('YYYY-MM-DD') }}</div>
     </a>
 </template>
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import { useData, withBase } from 'vitepress'
-import { initTags } from '../functions'
+import dayjs from 'dayjs'
+import { ref, onMounted } from 'vue'
+import { withBase } from 'vitepress'
+import { initTags } from '../utils'
+import { data as posts } from '../posts.data'
 
-let url = location.href.split('?')[1]
-let params = new URLSearchParams(url)
-const { theme } = useData()
-const data = computed(() => initTags(theme.value.posts))
-let selectTag = ref(params.get('tag') ? params.get('tag') : '')
+let selectTag = ref<string>()
+const data = initTags(posts)
+
 const toggleTag = (tag: string) => {
     selectTag.value = tag
 }
+
+onMounted(() => {
+    const tag = new URLSearchParams(location.search).get('tag')
+    tag && toggleTag(tag)
+})
 </script>
 
 <style scoped>

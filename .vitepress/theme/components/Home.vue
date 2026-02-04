@@ -1,60 +1,57 @@
 <template>
-    <div v-for="(article, index) in posts" :key="index" class="post-list">
+    <div v-for="{ url, title, date, tags, excerpt } in postsCurrent" :key="date" class="post-list">
         <div class="post-header">
             <div class="post-title">
-                <a :href="withBase(article.regularPath)"> {{ article.frontMatter.title }}</a>
+                <a :href="url"> {{ title }}</a>
             </div>
         </div>
-        <div class='post-info'>
-            {{ article.frontMatter.date }} <span v-for="item in article.frontMatter.tags"><a :href="withBase(`/pages/tags.html?tag=${item}`)"> {{ item }}</a></span>
+        <div class="post-info">
+            {{ dayjs(date).format('YYYY-MM-DD') }}
+            <span v-for="item in tags"
+                ><a :href="withBase(`/pages/tags.html?tag=${item}`)"> {{ item }}</a></span
+            >
         </div>
-        <p class="describe" v-html="article.frontMatter.description"></p>
+        <p class="describe" v-html="excerpt"></p>
     </div>
 
     <div class="pagination">
-        <a
-            class="link"
-            :class="{ active: pageCurrent === i }"
-            v-for="i in pagesNum"
-            :key="i"
-            :href="withBase(i === 1 ? '/index.html' : `/page_${i}.html`)"
-        >{{ i }}</a>
+        <a v-for="i in pageTotal" class="link" :class="{ active: pageCurrent === i }" :key="i" @click="switchPage(i)">{{
+            i
+        }}</a>
     </div>
 </template>
 
 <script lang="ts" setup>
+import dayjs from 'dayjs'
+import { ref, onMounted } from 'vue'
+import { withBase, useData } from 'vitepress'
 
-import { withBase } from 'vitepress'
-import { PropType } from 'vue'
-interface Article {
-    regularPath: string
-    frontMatter: {
-        title: string
-        description: string
-        date: string
-        tags: string[]
-    }
+import type { ThemeConfig } from '../../config'
+import { Post, data as posts } from '../posts.data'
+
+const { pageSize }: ThemeConfig = useData().theme.value
+
+const pageCurrent = ref(1)
+const pageTotal = Math.ceil(posts.length / pageSize)
+const postsCurrent = ref<Post[]>([])
+
+const switchPage = (i: number) => {
+    pageCurrent.value = i
+    postsCurrent.value = posts.slice((i - 1) * pageSize, i * pageSize)
 }
-defineProps({
-    posts: {
-        type: Array as PropType<Article[]>,
-        required: true
-    },
-    pageCurrent: {
-        type: Number as PropType<number>,
-        required: true
-    },
-    pagesNum: {
-        type: Number as PropType<number>,
-        required: true
-    }
+
+onMounted(async () => {
+    switchPage(1)
 })
 </script>
 
 <style scoped>
 .post-list {
-    border-bottom: 1px dashed var(--vp-c-divider-light);
-    padding: 14px 0 14px 0;
+    border-bottom: 1px solid var(--vp-c-divider-light);
+    padding: 1rem 0;
+}
+.post-list :last-child {
+    border-bottom: unset;
 }
 .post-header {
     display: flex;
@@ -68,7 +65,7 @@ defineProps({
 }
 
 .post-info {
-    margin: 10px 0;
+    margin: 10px 0 0;
 }
 
 .describe {
@@ -81,6 +78,11 @@ defineProps({
     color: var(--vp-c-text-2);
     line-height: 1.5rem;
 }
+
+.describe :v-deep(p) {
+    margin: 0;
+}
+
 .pagination {
     margin-top: 16px;
     display: flex;
@@ -93,6 +95,7 @@ defineProps({
     border: 1px var(--vp-c-divider-light) solid;
     border-right: none;
     font-weight: 400;
+    user-select: none;
 }
 .link.active {
     background: var(--vp-c-text-1);
@@ -125,10 +128,9 @@ defineProps({
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
         overflow: hidden;
-        width: 17rem;
     }
-    .post-info{
-        margin: 0.5rem 0 1rem;
+    .post-info {
+        margin: 0.5rem 0;
     }
     .describe {
         font-size: 0.9375rem;
